@@ -1,11 +1,14 @@
 
 import { useEffect, useState } from 'react'
-import './App.css'
-import { Note } from './types/note'
 import axios from 'axios'
+import { Note as NoteType} from './types/note'
+import Note from './components/Note'
+import { Button, Container, Row } from 'react-bootstrap'
+import AddNote from './components/AddNote'
 
 function App() {
-  const [notes,setNotes] = useState<Note[]>([])
+  const [notes,setNotes] = useState<NoteType[]>([])
+  const [showAdd,setShowAdd] = useState(false)
 
   const fetchNotes = async () => {
   const response = await axios.get("http://localhost:3000/api/notes")
@@ -17,20 +20,23 @@ function App() {
     fetchNotes()
   },[])
 
+
   
 
   return (
     <>
-  {!notes ? <p>Loading...</p> :
-    <div>
-      <h1>Notes</h1>
-      <ul>
-        {notes.map(note => (
-          <li key={note._id}>{note.title}</li>
-        ))}
-      </ul>
-    </div>}
-      
+    <Container className=' mt-3'>
+      <Button className=' bg-slate-700'  onClick={() => setShowAdd(true)}>Add Note</Button>
+      <Row xs={1} md={2} lg={3} xl={4} className='justify-content-center gap-2 '>
+        {notes && notes.length > 0 ? notes.map((data) =>
+         <Note  key={data._id} note={data}/>) : <p>Loading...</p>}
+      </Row>
+        {
+        showAdd && <AddNote onDismiss={() => setShowAdd(false)}/>
+        }
+    
+    </Container>
+  
     </>
   )
 }
