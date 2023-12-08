@@ -1,33 +1,36 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+
+import { useEffect, useState } from 'react'
 import './App.css'
+import { Note } from './types/note'
+import axios from 'axios'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [notes,setNotes] = useState<Note[]>([])
+
+  const fetchNotes = async () => {
+  const response = await axios.get("http://localhost:3000/api/notes")
+  setNotes(response.data)
+  console.log(response.data)
+  }
+
+  useEffect(() => {
+    fetchNotes()
+  },[])
+
+  
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+  {!notes ? <p>Loading...</p> :
+    <div>
+      <h1>Notes</h1>
+      <ul>
+        {notes.map(note => (
+          <li key={note._id}>{note.title}</li>
+        ))}
+      </ul>
+    </div>}
+      
     </>
   )
 }
