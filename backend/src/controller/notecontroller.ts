@@ -58,7 +58,7 @@ export const deleteNote: RequestHandler = async (req, res,next) => {
         if(!note) {
             throw createHttpError(404,"Note not found")
         }
-        res.sendStatus(204).json("The note has been deleted")
+        res.status(204).json("The note has been deleted")
     } catch (error) {
         next(error)
     }
