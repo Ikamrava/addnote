@@ -3,21 +3,18 @@ import { Note as NoteType} from '../types/note'
 import { Card } from 'react-bootstrap'
 import { AiOutlineDelete } from "react-icons/ai";
 import { CiEdit } from "react-icons/ci";
-import axios from 'axios';
+
 
 type Props = {
    note:NoteType
+   onDeleteNote:(note:NoteType)=> void
+   onEditClicked:(note:NoteType)=> void
 }
 
-function Note({note}: Props) {
-    const {title,text,createdAt,updatedAt,_id} = note
-    const deleteHandler = async () => {
-       const res = await axios.delete(`http://localhost:3000/api/notes/${_id}`)
-       console.log(res)
-       if(res.status === 204){
-        window.location.reload()
-       }
-    }
+function Note({note,onDeleteNote,onEditClicked}: Props) {
+    const {title,text,createdAt,updatedAt} = note
+
+
 
     const formatedDate = (date:string):string => {
         return new Date(date).toLocaleDateString("en-UK",{
@@ -50,11 +47,17 @@ function Note({note}: Props) {
         <Card.Footer className='  bg-slate-800 mb-2 text-white flex justify-between  '>
                 <div className=' text-sm'>{date}</div>
                 <div className=' flex gap-2'>
-                <div className=' cursor-pointer text-white'><CiEdit size={20} /></div>
-                <div className=' cursor-pointer text-red-600' onClick={deleteHandler}><AiOutlineDelete size={20}/></div>
+                <div className=' cursor-pointer text-white' onClick={()=>{
+                        onEditClicked(note)
+                }}>
+                    <CiEdit size={20} />
+                    </div>
+                <div className=' cursor-pointer text-red-600'
+                 onClick={(e)=>{onDeleteNote(note)
+                 e.stopPropagation()
+                }}>
+                    <AiOutlineDelete size={20}/></div>
                 </div>
-               
-                
         </Card.Footer>
 
         
