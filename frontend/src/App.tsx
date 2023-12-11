@@ -5,11 +5,15 @@ import { Note as NoteType} from './types/note'
 import Note from './components/Note'
 import { Button, Container, Row } from 'react-bootstrap'
 import AddNote from './components/AddNote'
+import { SignUpCredentials } from './types/user'
+import Signup from './components/Signup'
 
 function App() {
   const [notes,setNotes] = useState<NoteType[]>([])
   const [showAdd,setShowAdd] = useState(false)
   const [noteToEdit,setNoteToEdit] = useState<NoteType | null>(null)
+
+
 
   const fetchNotes = async () => {
   const response = await axios.get("http://localhost:3000/api/notes")
@@ -20,6 +24,34 @@ function App() {
   useEffect(() => {
     fetchNotes()
   },[])
+
+
+
+  async function logIn(credentials:SignUpCredentials) {
+    const res = await fetch("http://localhost:3000/api/users/login",
+    {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      method:"POST",
+      body:JSON.stringify(credentials)
+  
+  })
+    return res.json()
+    
+  }
+
+  async function logOut() {
+    await fetch("http://localhost:3000/api/users/logout",{method:"POST"})
+  }
+
+
+  async function getLoggedInUser() {
+    const res = await fetch("http://localhost:3000/api/users",{method:"GET"})
+    return res.json()
+    
+  }
+
 
   async function deleteNote(note:NoteType) {
     try {
@@ -54,6 +86,9 @@ function App() {
           setNoteToEdit(null)
           setNotes(notes.map(note => note._id === updatedNote._id ? updatedNote : note))
          }}/>
+        }
+        {
+          <Signup  onDismiss ={()=>{}} onSignup={()=>{}}/>          
         }
     
     </Container>
