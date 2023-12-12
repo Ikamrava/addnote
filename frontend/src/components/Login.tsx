@@ -1,6 +1,7 @@
 import { Button, Form, Modal } from 'react-bootstrap'
 import { User, logInCredentials } from "../types/user"
 import { useForm } from 'react-hook-form'
+import { useState } from 'react'
 
 
 
@@ -13,26 +14,31 @@ type Props = {
 function Login({onDismiss,onLogin}: Props) {
 
     const {register,handleSubmit,formState:{errors,isSubmitting}} = useForm<logInCredentials>()
+    const [isLoading, setIsLoading] = useState(false);
 
-    async function onSubmit(credential:logInCredentials) {
+    async function onSubmit(credential: logInCredentials) {
         try {
-                const res = await fetch("http://localhost:3000/api/users/login",
-                {
-                  headers: {
-                    'Content-Type': 'application/json'
-                  },
-                  method:"POST",
-                  body:JSON.stringify(credential)
-              
-              })
-                onLogin(await res.json())
-                
+          setIsLoading(true);
+          const res = await fetch("http://localhost:3000/api/users/login", {
+            method: "POST",
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(credential),
+            credentials: 'include',
+            
+          });
+          console.log(res);
+          const user = await res.json();
+          onLogin(user);
+          console.log(res.headers.get('set-cookie'))
         } catch (error) {
-            alert(error)
-            console.log(error)
+          alert(error);
+          console.log(error);
+        } finally {
+          setIsLoading(false);
         }
-    }
-
+      }
 
 
 

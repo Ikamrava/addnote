@@ -1,6 +1,6 @@
 import { Button, Navbar } from "react-bootstrap"
 import { User } from "../types/user"
-import Avatar from 'react-avatar';
+
 
 
 type Props = {
@@ -22,8 +22,8 @@ function NavBarLoggedInView({user,onLogout}: Props) {
     }
   return (
     <>
-    <Navbar.Text className="me-2">
-      <Avatar name={user.username} round={true} size="25"/>
+    <Navbar.Text className="me-2 text-white">
+      Hello {user.username}
     </Navbar.Text>
     <Button onClick={logOut}>Logout</Button>
     </>

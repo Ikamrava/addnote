@@ -2,9 +2,11 @@ import { RequestHandler } from "express";
 import createHttpError from "http-errors";
 import UserModel from "../models/user";
 import bcrypt from "bcrypt"
+import session from "express-session";
 
 export const getAuthenticatedUser: RequestHandler = async(req,res,next)=>{
     const authenticatedUserId = req.session.userId
+    console.log(authenticatedUserId)
     try {
         if(!authenticatedUserId){
             throw createHttpError(401,'User not authenticated')
@@ -84,7 +86,10 @@ export const login: RequestHandler<unknown,unknown,LoginBody,unknown> = async(re
             throw createHttpError(401,'Invalid credentials')
         }
         req.session.userId = user._id
-        res.status(201).json(user)
+        console.log('Before setting userId:', req.session);
+        req.session.userId = user._id;
+        console.log('After setting userId:', req.session);
+        return res.status(200).json(user)
 
     } catch (error) {
         next(error)

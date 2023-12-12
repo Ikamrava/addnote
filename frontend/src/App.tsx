@@ -9,60 +9,65 @@ import { Container } from 'react-bootstrap'
 import Signup from './components/Signup'
 import Login from './components/Login'
 import { User } from './types/user'
+import LoggedOutView from './components/LoggedOutView'
 
 function App() {
   const [loggedUser,setLoggedUser] = useState<User|null>(null)
   const [showSignup,setShowSignup] = useState(false)
   const [showLogin,setShowLogin] = useState(false)
 
-  async function getLoggedInUser() {
-    try {
-      const res = await fetch("http://localhost:3000/api/users",{method:"GET"})
-      const data = await res.json()
-      setLoggedUser(data)
-      console.log(loggedUser)
+  async function fetchData(input:RequestInfo,init?:RequestInit) {
+    const res = await fetch(input,init)
+    if(res.ok){
+      return res
+    }else{
+      const errorBody =await res.json()
+      const errorMessage = await errorBody.error;
+      throw Error(errorMessage)
       
-    } catch (error) {
-      console.log(error)
     }
+    
+  }
+
+  async function getLoggedInUser():Promise<User> {
+    const res = await fetchData("http://localhost:3000/api/users",{method:"GET"})
+    return res.json()
+    
   }
 
   useEffect(()=>{
-    try {
-      getLoggedInUser()
-      
-    } catch (error) {
-      console.log(error)
+    async function fetchLoggedInUser() {
+      try {
+        const user = await getLoggedInUser()
+        setLoggedUser(user)        
+      } catch (error) {
+        console.log(error)
+      }
     }
+    fetchLoggedInUser()
     
   },[])
     
-
-
-
-
-
-
-
-
- 
-
-  
-
-
-
   return (
     <>
     <NavBar loggedInUser = {loggedUser} onSignUpClicked ={()=>{setShowSignup(true)}} onSignInClicked={()=>{setShowLogin(true)}} onSignOutSuccess={()=>{setLoggedUser(null)}}/>
     <Container className=' mt-3'>
-      <NoteLoggedInView />
-      {showSignup &&
-        <Signup  onDismiss ={()=>{}} onSignup={()=>{}}/>          
+      {
+        loggedUser ? <NoteLoggedInView/> : <LoggedOutView/>
+      }
+     
+    </Container>
+    {showSignup &&
+        <Signup  onDismiss ={()=>{setShowLogin(false)}} onSignup={(user)=>{
+          setLoggedUser(user)
+          setShowSignup(false)
+        }}/>          
       }
       {showLogin &&
-        <Login  onDismiss ={()=>{setShowLogin(false) }} onLogin={()=>{setLoggedUser(loggedUser)}}/>          
+        <Login  onDismiss ={()=>{setShowLogin(false) }} onLogin={(user)=>{
+          setLoggedUser(user)
+          setShowLogin(false)}}/>          
       }
-    </Container>
   
     </>
   )

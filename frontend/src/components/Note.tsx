@@ -47,6 +47,7 @@ function Note({note,onDeleteNote,onEditClicked}: Props) {
         <Card.Footer className='  bg-slate-800 mb-2 text-white flex justify-between  '>
                 <div className=' text-sm'>{date}</div>
                 <div className=' flex gap-2'>
+                    
                 <div className=' cursor-pointer text-white' onClick={()=>{
                         onEditClicked(note)
                 }}>
